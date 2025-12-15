@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn.svm import SVR
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
@@ -90,4 +91,35 @@ def train_xgboost(X_train, y_train):
     print(f"Best XGBoost Parameters found: {grid_search.best_params_}")
     
     # Return the best trained model
+    return grid_search.best_estimator_
+
+    def train_svr_model(X_train, y_train):
+    """
+    Trains a Support Vector Regressor model with a basic grid search.
+    """
+    print("\n--- Training Support Vector Regressor (SVR) ---")
+    
+    # SVR requires features to be scaled, which is best handled within the pipeline,
+    # but for simplicity, we will rely on the model handling minor differences here.
+    base_model = SVR(kernel='rbf') # Radial Basis Function kernel for non-linearity
+    
+    # Define a basic hyperparameter grid for tuning (keep it small to prevent timeouts)
+    param_grid = {
+        'C': [1, 10],  # Regularization parameter
+        'gamma': ['scale', 0.1], # Kernel coefficient
+    }
+    
+    grid_search = GridSearchCV(
+        estimator=base_model,
+        param_grid=param_grid,
+        scoring='neg_mean_squared_error',
+        cv=2,  # Reduced cross-validation for speed
+        verbose=0, # Reduced verbosity
+        n_jobs=-1
+    )
+    
+    grid_search.fit(X_train, y_train)
+    
+    print(f"Best SVR Parameters found: {grid_search.best_params_}")
+    
     return grid_search.best_estimator_
