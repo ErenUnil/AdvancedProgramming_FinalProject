@@ -1,0 +1,13 @@
+name: housing-project
+channels:
+  - defaults
+dependencies:
+  - python=3.13  
+  - pandas
+  - numpy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - pip:
+    - statsmodels
+    - xgboost
