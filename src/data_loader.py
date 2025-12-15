@@ -28,7 +28,7 @@ def load_and_preprocess_data():
     # The proposal focuses on environmental factors and location.
     # Dropping 'assess', 'bdrms', and 'baths' to simplify the model comparison
     # and focus on the primary features of interest (price, dist, nearinc, etc.)
-    data = data.drop(columns=['assess', 'bdrms', 'baths', 'lprice', 'land', 'lland', 'area', 'larea', 'rooms'], errors='ignore')
+    data = data.drop(columns=['assess', 'bdrms', 'baths', 'lprice', 'land', 'lland', 'area', 'larea', 'rooms', 'age', 'agesq', 'year', 'y81'], errors='ignore')
 
     # Define Target (y) and Features (X)
     # The target variable (y) is the house price.
