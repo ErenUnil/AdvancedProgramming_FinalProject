@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
-from sklearn.svm import SVR
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 import statsmodels.api as sm
 import xgboost as xgb
+import statsmodels.api as sm
 
 # Use the same random state as the data loader for full reproducibility
 RANDOM_STATE = 42
@@ -13,17 +13,21 @@ RANDOM_STATE = 42
 # --- 1. Baseline Model: OLS Linear Regression ---
 
 def train_ols_model(X_train, y_train):
-    """Trains the Ordinary Least Squares (OLS) Linear Regression baseline model."""
-    print("\n--- 3. Training OLS Linear Regression (Baseline) ---")
-    
-    # 1. Add a constant term for the OLS model
-    # statsmodels requires an explicit constant for the intercept
+    """
+    Trains an OLS model using statsmodels for full econometric reporting.
+    (Note: statsmodels requires adding a constant for the intercept)
+    """
+    print("\n--- Training OLS Model with statsmodels ---")
+
+    # Add a constant (intercept) term required by statsmodels
     X_train_sm = sm.add_constant(X_train)
-    
-    # 2. Fit the OLS model
+
+    # Instantiate and fit the OLS model
     ols_model = sm.OLS(y_train, X_train_sm).fit()
-    
-    # For OLS, we return the fitted object which contains summary statistics
+
+    # Print the summary immediately for the terminal output
+    print(ols_model.summary()) # THIS PROVIDES THE ECONOMETRIC TABLE
+
     return ols_model
 
 # --- 2. ML Model 1: Random Forest Regression (with basic tuning) ---
@@ -91,35 +95,4 @@ def train_xgboost(X_train, y_train):
     print(f"Best XGBoost Parameters found: {grid_search.best_params_}")
     
     # Return the best trained model
-    return grid_search.best_estimator_
-
-    def train_svr_model(X_train, y_train):
-    """
-    Trains a Support Vector Regressor model with a basic grid search.
-    """
-    print("\n--- Training Support Vector Regressor (SVR) ---")
-    
-    # SVR requires features to be scaled, which is best handled within the pipeline,
-    # but for simplicity, we will rely on the model handling minor differences here.
-    base_model = SVR(kernel='rbf') # Radial Basis Function kernel for non-linearity
-    
-    # Define a basic hyperparameter grid for tuning (keep it small to prevent timeouts)
-    param_grid = {
-        'C': [1, 10],  # Regularization parameter
-        'gamma': ['scale', 0.1], # Kernel coefficient
-    }
-    
-    grid_search = GridSearchCV(
-        estimator=base_model,
-        param_grid=param_grid,
-        scoring='neg_mean_squared_error',
-        cv=2,  # Reduced cross-validation for speed
-        verbose=0, # Reduced verbosity
-        n_jobs=-1
-    )
-    
-    grid_search.fit(X_train, y_train)
-    
-    print(f"Best SVR Parameters found: {grid_search.best_params_}")
-    
     return grid_search.best_estimator_

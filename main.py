@@ -3,7 +3,7 @@ import numpy as np
 import os
 import time
 from src.data_loader import load_and_preprocess_data
-from src.models import train_ols_model, train_random_forest, train_xgboost, train_svr_model
+from src.models import train_ols_model, train_random_forest, train_xgboost
 from src.evaluation import evaluate_model, evaluate_ols_model
 
 # Set a consistent random state for full reproducibility
@@ -34,9 +34,6 @@ def main():
     
     # C. Train XGBoost Model (with tuning)
     xgb_model = train_xgboost(X_train, y_train)
-
-    # D. Train SVR Model (new model)
-    svr_model = train_svr_model(X_train, y_train)
     
     # 3. MODEL EVALUATION
     print("\n\n=========================================================")
@@ -51,9 +48,6 @@ def main():
     
     # Evaluate XGBoost Model
     xgb_metrics = evaluate_model(xgb_model, X_test, y_test, "XGBoost Regressor")
-    
-    # Evaluate SVR Model (new model)
-    svr_metrics = evaluate_model(svr_model, X_test, y_test, "SVR Regressor")
     
     
     # 4. FEATURE IMPORTANCE ANALYSIS (for ML Models)
@@ -84,7 +78,6 @@ def main():
         'OLS Baseline': ols_metrics,
         'Random Forest': rf_metrics,
         'XGBoost': xgb_metrics,
-        'SVR': svr_metrics # New Model
     }).T
     
     print(summary_df)
