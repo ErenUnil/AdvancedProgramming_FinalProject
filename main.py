@@ -1,104 +1,75 @@
 import pandas as pd
-import numpy as np
 import os
 import time
+import joblib
 from src.data_loader import load_and_preprocess_data
-from src.models import train_ols_model, train_random_forest, train_xgboost
-from src.evaluation import evaluate_model, evaluate_ols_model
-
-# Set a consistent random state for full reproducibility
-RANDOM_STATE = 42
+from src.evaluation import calculate_vif
+from src.housing_class import HousingModel
 
 def main():
-    """
-    Runs the complete housing price prediction analysis pipeline:
-    1. Loads and splits data.
-    2. Trains three models (OLS, RF, XGBoost).
-    3. Evaluates models and compares performance.
-    """
     start_time = time.time()
     print("=========================================================")
-    print("|| STARTING HOUSING PRICE PREDICTION PROJECT PIPELINE ||")
+    print("|| STARTING ENCAPSULATED HOUSING PREDICTION PIPELINE   ||")
     print("=========================================================")
     
     # 1. DATA LOADING AND PREPROCESSING
+    # Modular data handling as per software engineering standards (Lecture 13)
     X_train, X_test, y_train, y_test = load_and_preprocess_data()
     
-    # 2. MODEL TRAINING
+    # --- 2. ACADEMIC DIAGNOSTICS ---
+    # Detecting Multicollinearity using Variance Inflation Factor (Lecture 6c)
+    calculate_vif(X_train)
     
-    # A. Train OLS Baseline Model
-    ols_model = train_ols_model(X_train, y_train)
+    # --- 3. MODELING VIA ENCAPSULATION (OOP Approach) ---
+    # A. OLS Baseline (Econometric Approach)
+    ols_project = HousingModel(model_type="OLS")
+    ols_project.train(X_train, y_train)
+    ols_metrics = ols_project.evaluate(X_test, y_test)
     
-    # B. Train Random Forest Model (with tuning)
-    rf_model = train_random_forest(X_train, y_train)
+    # B. Random Forest (Ensemble Learning - Bagging)
+    rf_project = HousingModel(model_type="RF")
+    rf_project.train(X_train, y_train)
+    rf_metrics = rf_project.evaluate(X_test, y_test)
     
-    # C. Train XGBoost Model (with tuning)
-    xgb_model = train_xgboost(X_train, y_train)
+    # C. XGBoost (Ensemble Learning - Boosting)
+    xgb_project = HousingModel(model_type="XGB")
+    xgb_project.train(X_train, y_train)
+    xgb_metrics = xgb_project.evaluate(X_test, y_test)
     
-    # 3. MODEL EVALUATION
+    # 4. FEATURE IMPORTANCE ANALYSIS
     print("\n\n=========================================================")
-    print("|| MODEL EVALUATION AND COMPARISON ||")
+    print("|| FEATURE IMPORTANCE ANALYSIS (RF vs XGB) ||")
     print("=========================================================")
     
-    # Evaluate OLS Model
-    ols_metrics = evaluate_ols_model(ols_model, X_test, y_test)
-    
-    # Evaluate Random Forest Model
-    rf_metrics = evaluate_model(rf_model, X_test, y_test, "Random Forest Regressor")
-    
-    # Evaluate XGBoost Model
-    xgb_metrics = evaluate_model(xgb_model, X_test, y_test, "XGBoost Regressor")
-    
-    
-    # 4. FEATURE IMPORTANCE ANALYSIS (for ML Models)
-    print("\n\n=========================================================")
-    print("|| FEATURE IMPORTANCE ANALYSIS (RF vs. XGBoost) ||")
-    print("=========================================================")
-    
-    # Get feature names
-    feature_names = X_train.columns.tolist()
-    
-    # --- Random Forest Importance ---
-    rf_importances = pd.Series(rf_model.feature_importances_, index=feature_names)
-    print("\nRandom Forest Top 5 Feature Importances:")
+    # Extracting importance from Random Forest (Lecture 8/9)
+    rf_importances = pd.Series(rf_project.model.feature_importances_, index=X_train.columns)
+    print("\nRandom Forest Top 5 Features:")
     print(rf_importances.nlargest(5))
     
-    # --- XGBoost Importance ---
-    xgb_importances = pd.Series(xgb_model.feature_importances_, index=feature_names)
-    print("\nXGBoost Top 5 Feature Importances:")
+    # Extracting importance from XGBoost (Lecture 10/11)
+    # This allows comparing how Bagging vs Boosting weight locational factors
+    xgb_importances = pd.Series(xgb_project.model.feature_importances_, index=X_train.columns)
+    print("\nXGBoost Top 5 Features:")
     print(xgb_importances.nlargest(5))
     
-    
-    # 5. FINAL SUMMARY
+    # 5. FINAL SUMMARY TABLE
     print("\n\n=========================================================")
     print("|| FINAL METRICS SUMMARY ||")
     print("=========================================================")
-    
     summary_df = pd.DataFrame({
         'OLS Baseline': ols_metrics,
         'Random Forest': rf_metrics,
-        'XGBoost': xgb_metrics,
+        'XGBoost': xgb_metrics
     }).T
-    
     print(summary_df)
 
-    # SAVE THE BEST MODEL FOR THE DASHBOARD
-    import joblib
+    # 6. SAVING ASSETS FOR DASHBOARD
+    os.makedirs('results', exist_ok=True)
+    joblib.dump(rf_project.model, 'results/best_random_forest_model.joblib')
+    joblib.dump(X_train.columns.tolist(), 'results/feature_names.joblib')
     
-    # Save the Random Forest model (our best performer)
-    model_save_path = os.path.join('results', 'best_random_forest_model.joblib')
-    joblib.dump(rf_model, model_save_path)
-    
-    # Save the feature names so the dashboard knows the order
-    features_save_path = os.path.join('results', 'feature_names.joblib')
-    joblib.dump(X_train.columns.tolist(), features_save_path)
-    
-    print(f"Model and features saved to 'results/' for the dashboard!")
-    
-    end_time = time.time()
-    print(f"\nTotal Pipeline Execution Time: {(end_time - start_time):.2f} seconds.")
+    print(f"\nPipeline Execution Complete in {(time.time() - start_time):.2f}s.")
     print("=========================================================")
-
 
 if __name__ == '__main__':
     main()
