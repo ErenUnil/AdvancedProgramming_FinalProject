@@ -8,7 +8,8 @@ import statsmodels.api as sm
 
 def calculate_metrics(y_true, y_pred, model_name):
     """
-    Calculates and prints the primary regression metrics (RMSE, MAE, R^2).
+    Calculates primary regression metrics and triggers diagnostic plots.
+    Aligned with Lecture 6a and 10 for model comparison.
     """
     rmse = np.sqrt(mean_squared_error(y_true, y_pred))
     mae = mean_absolute_error(y_true, y_pred)
@@ -19,57 +20,48 @@ def calculate_metrics(y_true, y_pred, model_name):
     print(f"MAE (Mean Absolute Error): {mae:.4f}")
     print(f"R-squared (R2 Score): {r2:.4f}")
     
-    # Run diagnostic plots for every model evaluated
+    # Save diagnostic plots to the results folder
     run_diagnostic_plots(y_true, y_pred, model_name)
     
     return {'RMSE': rmse, 'MAE': mae, 'R2': r2}
 
-def evaluate_model(model, X_test, y_test, model_name):
-    """
-    Handles prediction and metric calculation for scikit-learn/XGBoost models.
-    """
-    y_pred = model.predict(X_test)
-    return calculate_metrics(y_test, y_pred, model_name)
-
-def evaluate_ols_model(ols_model, X_test, y_test):
-    """
-    Handles prediction and metric calculation for the statsmodels OLS model.
-    """
-    X_test_sm = sm.add_constant(X_test, has_constant='add')
-    y_pred = ols_model.predict(X_test_sm)
-    return calculate_metrics(y_test, y_pred, "OLS Linear Regression (Baseline)")
-
 def run_diagnostic_plots(y_true, y_pred, model_name):
     """
     Generates residual diagnostic plots to check for Normality and Homoskedasticity.
+    Essential for validating OLS and ML assumptions.
     """
     residuals = y_true - y_pred
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     
     # Histogram: Checking for Normal Distribution of errors
-    sns.histplot(residuals, kde=True, ax=ax1)
-    ax1.set_title(f'Residual Distribution - {model_name}')
+    sns.histplot(residuals, kde=True, ax=ax1, color='teal')
+    ax1.set_title(f'Residual Distribution\n({model_name})')
     
-    # Scatter: Checking for constant variance (Homoskedasticity)
-    sns.scatterplot(x=y_pred, y=residuals, ax=ax2)
+    # Scatter: Checking for Homoskedasticity (Constant Variance)
+    sns.scatterplot(x=y_pred, y=residuals, ax=ax2, alpha=0.5)
     ax2.axhline(y=0, color='r', linestyle='--')
-    ax2.set_title(f'Residuals vs. Predictions - {model_name}')
+    ax2.set_title(f'Residuals vs. Predictions\n({model_name})')
     
     plt.tight_layout()
+    # Save with a clean filename in the results directory
     plt.savefig(f'results/diagnostics_{model_name.replace(" ", "_")}.png')
-    plt.close() # Closes figure to save memory
+    plt.close()
 
 def calculate_vif(X):
     """
-    Calculates Variance Inflation Factor (VIF) to identify multicollinearity.
+    Calculates VIF to identify multicollinearity issues.
+    High VIF (>5 or 10) suggests redundant locational features.
     """
-    if 'const' not in X.columns:
-        X = sm.add_constant(X)
+    # Create a copy to avoid modifying the original dataframe
+    X_vif = X.copy()
+    if 'const' not in X_vif.columns:
+        X_vif = sm.add_constant(X_vif)
         
     vif_data = pd.DataFrame()
-    vif_data["feature"] = X.columns
-    vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(len(X.columns))]
+    vif_data["feature"] = X_vif.columns
+    vif_data["VIF"] = [variance_inflation_factor(X_vif.values, i) for i in range(len(X_vif.columns))]
     
     print("\n--- Variance Inflation Factor (VIF) Analysis ---")
+    # Hide the constant to focus on the features
     print(vif_data[vif_data['feature'] != 'const']) 
     return vif_data
