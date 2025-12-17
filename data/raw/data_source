@@ -1,0 +1,5 @@
+# Data Source
+The data for this project is not stored locally to ensure reproducibility and to follow data provenance best practices.
+
+**Source:** Wooldridge "hprice3" dataset.
+**Acquisition:** Dynamically fetched via `statsmodels.api.datasets.get_rdataset`.
