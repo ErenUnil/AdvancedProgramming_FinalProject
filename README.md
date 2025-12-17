@@ -30,7 +30,7 @@ The repository follows industry-standard modularity to ensure code maintainabili
 
 ---
 
-## 🛠️ 3. Installation & Reproducibility
+## 3. Installation & Reproducibility
 This project uses **Conda** to ensure that all library versions are consistent across different machines.
 
 1. **Create the environment:** `conda env create -f environment.yml`
