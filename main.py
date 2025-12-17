@@ -81,6 +81,19 @@ def main():
     }).T
     
     print(summary_df)
+
+    # SAVE THE BEST MODEL FOR THE DASHBOARD
+    import joblib
+    
+    # Save the Random Forest model (our best performer)
+    model_save_path = os.path.join('results', 'best_random_forest_model.joblib')
+    joblib.dump(rf_model, model_save_path)
+    
+    # Save the feature names so the dashboard knows the order
+    features_save_path = os.path.join('results', 'feature_names.joblib')
+    joblib.dump(X_train.columns.tolist(), features_save_path)
+    
+    print(f"Model and features saved to 'results/' for the dashboard!")
     
     end_time = time.time()
     print(f"\nTotal Pipeline Execution Time: {(end_time - start_time):.2f} seconds.")
