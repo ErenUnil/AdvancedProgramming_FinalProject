@@ -1,6 +1,6 @@
 # Housing Price Prediction: Locational & Environmental Analysis
 
-This project investigates the impact of geographic and environmental factors on housing prices using the **Wooldridge `hprice3` dataset**. It demonstrates a professional Data Science workflow, combining econometric rigor with modern machine learning techniques.
+This project investigates the impact of geographic and environmental factors on housing prices using the **Wooldridge `hprice3` dataset**. It demonstrates a Data Science workflow, combining econometric with machine learning techniques.
 
 ---
 
