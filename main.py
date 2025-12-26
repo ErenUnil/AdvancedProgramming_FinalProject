@@ -18,11 +18,11 @@ def main():
     print("=========================================================")
     
     # 1. DATA LOADING AND PREPROCESSING
-    # Modular data handling as per software engineering standards (Lecture 13)
+    # Modular data handling as per software engineering standards
     X_train, X_test, y_train, y_test = load_and_preprocess_data()
     
     # --- 2. ACADEMIC DIAGNOSTICS ---
-    # Detecting Multicollinearity using Variance Inflation Factor (Lecture 6c)
+    # Detecting Multicollinearity using Variance Inflation Factor 
     calculate_vif(X_train)
     
     # --- 3. MODELING VIA ENCAPSULATION (OOP Approach) ---
@@ -51,12 +51,12 @@ def main():
     print("|| FEATURE IMPORTANCE ANALYSIS (RF vs XGB) ||")
     print("=========================================================")
     
-    # Extracting importance from Random Forest (Lecture 8/9)
+    # Extracting importance from Random Forest 
     rf_importances = pd.Series(rf_project.model.feature_importances_, index=X_train.columns)
     print("\nRandom Forest Top 5 Features:")
     print(rf_importances.nlargest(5))
     
-    # Extracting importance from XGBoost (Lecture 10/11)
+    # Extracting importance from XGBoost 
     xgb_importances = pd.Series(xgb_project.model.feature_importances_, index=X_train.columns)
     print("\nXGBoost Top 5 Features:")
     print(xgb_importances.nlargest(5))

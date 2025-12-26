@@ -13,7 +13,7 @@ st.markdown("Move the sliders to see how each factor changes the predicted house
 # 1. Load the saved model and features
 @st.cache_resource
 def load_assets():
-    # Chemins basés sur ton arborescence (Source 31, 32, 36)
+    # Paths based on your project structure
     model = joblib.load('results/best_random_forest_model.joblib')
     feature_names = joblib.load('results/feature_names.joblib')
     return model, feature_names
@@ -25,10 +25,10 @@ try:
     st.sidebar.header("Adjust House Characteristics")
     input_data = {}
     
-    # Utilisation directe de feature_names pour garantir la correspondance
+    # Direct use of feature_names to ensure matching consistency
     for col in feature_names:
         if 'dist' in col or 'cbd' in col or 'inst' in col:
-            # Plage adaptée aux données géographiques (Source 13, 16)
+            # Range adapted for geographical data
             input_data[col] = st.sidebar.slider(f"{col}", 0.0, 50000.0, 10000.0)
         elif 'nbh' in col:
             input_data[col] = st.sidebar.slider(f"{col}", 1, 10, 5)
@@ -36,7 +36,7 @@ try:
             input_data[col] = st.sidebar.number_input(f"{col}", value=0.0)
 
     # 3. Make Prediction with FIXED COLUMN ORDER
-    # On force l'ordre des colonnes avec [feature_names]
+    # Force column order using [feature_names] to match model requirements
     input_df = pd.DataFrame([input_data])[feature_names] 
     prediction = rf_model.predict(input_df)[0]
 
@@ -56,7 +56,7 @@ try:
     for val in plot_x:
         temp_input = input_data.copy()
         temp_input[selected_factor] = val
-        # Toujours forcer l'ordre ici aussi
+        # Always force the column order here as well
         temp_df = pd.DataFrame([temp_input])[feature_names]
         plot_preds.append(rf_model.predict(temp_df)[0])
     
@@ -65,4 +65,4 @@ try:
 
 except Exception as e:
     st.error(f"Error loading dashboard: {e}")
-    st.write("Ensure 'main.py' was executed to generate 'results/best_random_forest_model.joblib'[cite: 32].")
+    st.write("Ensure 'main.py' was executed to generate 'results/best_random_forest_model.joblib'.")
