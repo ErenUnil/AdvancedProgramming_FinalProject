@@ -9,7 +9,6 @@ import statsmodels.api as sm
 def calculate_metrics(y_true, y_pred, model_name):
     """
     Calculates primary regression metrics and triggers diagnostic plots.
-    Aligned with Lecture 6a and 10 for model comparison.
     """
     rmse = np.sqrt(mean_squared_error(y_true, y_pred))
     mae = mean_absolute_error(y_true, y_pred)
