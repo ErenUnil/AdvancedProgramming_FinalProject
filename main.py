@@ -72,12 +72,16 @@ def main():
     }).T
     print(summary_df)
 
-    # 6. SAVING ASSETS FOR DASHBOARD
-    # We save the core model and the feature list for the Streamlit App
-    joblib.dump(rf_project.model, 'results/best_random_forest_model.joblib')
+   # 6. SAVING ASSETS FOR DASHBOARD
+    if not os.path.exists('results'):
+        os.makedirs('results')
+    
+    # Save the trained XGBoost model and feature names for the Streamlit App
+    joblib.dump(xgb_project.model, 'results/best_xgboost_model.joblib')
     joblib.dump(X_train.columns.tolist(), 'results/feature_names.joblib')
     
     print(f"\nPipeline Execution Complete in {(time.time() - start_time):.2f}s.")
+    print(f"Final XGBoost R-squared: {xgb_metrics['R2']:.4f}")
     print(f"All assets and diagnostic plots saved in 'results/' directory.")
     print("=========================================================")
 
