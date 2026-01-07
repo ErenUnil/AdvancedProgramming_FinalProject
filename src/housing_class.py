@@ -7,7 +7,7 @@ from src.evaluation import calculate_metrics
 class HousingModel:
     def __init__(self, model_type="RF"):
         self.model_type = model_type
-        # Mapping for professional file naming in results folder
+        # Mapping for file naming in results folder
         self.full_names = {"OLS": "Linear_Regression", "RF": "Random_Forest", "XGB": "XGBoost"}
         self.model = None
         self.feature_names = None
