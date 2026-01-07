@@ -54,4 +54,4 @@ if __name__ == '__main__':
     # This block allows for direct testing of the function
     X_train, X_test, y_train, y_test = load_and_preprocess_data()
     print("\nData loading and split successful.")
-    print(f"Feature set example: {X_train.head(1).columns.tolist()}")
+    print(f"Feature set example: {X_train.columns.tolist()}")
